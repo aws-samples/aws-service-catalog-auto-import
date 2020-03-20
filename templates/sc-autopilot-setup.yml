@@ -1,0 +1,112 @@
+# /*
+#  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#  * SPDX-License-Identifier: MIT-0
+#  *
+#  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+#  * software and associated documentation files (the "Software"), to deal in the Software
+#  * without restriction, including without limitation the rights to use, copy, modify,
+#  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+#  * permit persons to whom the Software is furnished to do so.
+#  *
+#  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+#  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+#  * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+#  * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+#  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+#  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#  */
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS Service Catalog Autopilot Importer. 
+Parameters:
+  SourceBucket:
+    Description: "AWS Service Catalog Autopilot Importer Codebase Bucket Name"
+    Type: String
+    Default: marketplace-sa-resources
+    AllowedPattern: ".+"  
+  LambdaFileName:
+    Description: "S3 key of the zip file containing the code for lambda function"
+    Type: String
+    Default: Auto-import-sc/resources/sc-autopilot-importer.zip
+  DefaultIAMPrincipalRoleName:
+    Description: "Default IAM role name (NOT ARN) who can access to imported SC portfolios in child accounts. This role MUST exist in each account where the import lambda will run."
+    Type: String
+  DefaultLaunchConstraint:
+    Description: "Default SC launch constraint role name (NOT ARN) to be assigned to each product in imported SC portfolios in child accounts. This role MUST exist in each account where the import lambda will run."
+    Type: String  
+  SNSTopicArn:
+    Description: "ARN of the SNS topic in the hub account that will send notifications to this lambda from the hub account on changes"
+    Type: String
+Resources:  
+  SCAutoPilotImporterLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Handler: "sc-autopilot-importer.main"
+      FunctionName: "sc-autopilot-importer"
+      Runtime: "python3.8"
+      Role: !GetAtt LambdaExecuteRole.Arn
+      Environment:
+        Variables:
+          'default_iam_principal_role_name' : !Ref DefaultIAMPrincipalRoleName
+          'default_launch_constraint' : !Ref DefaultLaunchConstraint      
+      Timeout: 900 
+      MemorySize: 512
+      Code:
+        S3Bucket: !Ref SourceBucket
+        S3Key: !Ref LambdaFileName
+  LambdaExecuteRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AWSServiceCatalogAdminFullAccess"
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      RoleName: "SCAutoPilotLambdaExecRole"
+      Policies:
+      - PolicyName: LambdaAccessRole
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            -
+              Effect: Allow
+              Action: "sts:AssumeRole"
+              Resource: "*"
+            -
+              Effect: Allow
+              Action: [
+                "s3:GetObject",
+                "s3:GetBucketPolicy",
+                "s3:PutBucketPolicy"
+              ]
+              Resource: "*"
+            -
+              Effect: Allow
+              Action: "iam:GetRole"
+              Resource: "*"
+  SNSSubscription:  
+    Type: AWS::SNS::Subscription
+    Properties: 
+      Endpoint: !GetAtt SCAutoPilotImporterLambda.Arn 
+      Protocol: lambda
+      TopicArn: !Ref SNSTopicArn
+  
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt SCAutoPilotImporterLambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref SNSTopicArn
+
+Outputs: 
+  IAMRoleforSCAutoPilotLambda:
+    Description: IAM Role ARN of SC Auto Pilot Lambda Execution Role 
+    Value: !GetAtt LambdaExecuteRole.Arn

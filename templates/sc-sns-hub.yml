@@ -1,0 +1,119 @@
+# /*
+#  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#  * SPDX-License-Identifier: MIT-0
+#  *
+#  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+#  * software and associated documentation files (the "Software"), to deal in the Software
+#  * without restriction, including without limitation the rights to use, copy, modify,
+#  * merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+#  * permit persons to whom the Software is furnished to do so.
+#  *
+#  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+#  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+#  * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+#  * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+#  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+#  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#  */
+AWSTemplateFormatVersion: "2010-09-09"
+Description: AWS Service Catalog SNS notifications from the Hub account. 
+Parameters:
+  ServiceCatalogHubSNSTopicName:
+    Description: "AWS Service Catalog SNS notifications topic name"
+    Type: String
+    Default: ServiceCatalogHubSNSTopic
+Resources: 
+  ServiceCatalogHubSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties: 
+      DisplayName: Service Catalog Hub SNS Topic
+      TopicName: !Ref ServiceCatalogHubSNSTopicName
+  SNSAccessPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+     PolicyDocument:
+       Id: SCSNSTopicPolicy
+       Statement:
+         -
+           Action: 
+            - "sns:Publish"
+            - "SNS:GetTopicAttributes"
+            - "SNS:SetTopicAttributes"
+            - "SNS:AddPermission"
+            - "SNS:RemovePermission"
+            - "SNS:DeleteTopic"
+            - "SNS:Subscribe"
+            - "SNS:ListSubscriptionsByTopic"
+            - "SNS:Publish"
+            - "SNS:Receive"
+           Effect: Allow
+           Principal:
+             AWS: "*"
+           Resource:
+             Ref: ServiceCatalogHubSNSTopic
+     Topics:
+       -
+         Ref: ServiceCatalogHubSNSTopic
+  CloudWatchEventRule:
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: CloudWatch event rule to trigger AWS Service Catalog SNS topic
+      Name: SCSNSTopicTrigger
+      EventPattern:
+        source:
+          - "aws.servicecatalog"
+        detail-type:
+          - "AWS API Call via CloudTrail"
+        detail:
+          eventSource:
+            - "servicecatalog.amazonaws.com"
+          eventName:
+            - AcceptPortfolioShare
+            - AssociateBudgetWithResource
+            - AssociatePrincipalWithPortfolio
+            - AssociateProductWithPortfolio
+            - AssociateServiceActionWithProvisioningArtifact
+            - AssociateTagOptionWithResource
+            - BatchAssociateServiceActionWithProvisioningArtifact
+            - BatchDisassociateServiceActionFromProvisioningArtifact
+            - CopyProduct
+            - CreateConstraint
+            - CreatePortfolio
+            - CreatePortfolioShare
+            - CreateProduct
+            - CreateProvisionedProductPlan
+            - CreateProvisioningArtifact
+            - CreateServiceAction
+            - CreateTagOption
+            - DeleteConstraint
+            - DeletePortfolio
+            - DeletePortfolioShare
+            - DeleteProduct
+            - DeleteProvisionedProductPlan
+            - DeleteProvisioningArtifact
+            - DeleteServiceAction
+            - DeleteTagOption
+            - DisableAWSOrganizationsAccess
+            - DisassociateBudgetFromResource
+            - DisassociatePrincipalFromPortfolio
+            - DisassociateProductFromPortfolio
+            - DisassociateServiceActionFromProvisioningArtifact
+            - DisassociateTagOptionFromResource
+            - UpdateConstraint
+            - UpdatePortfolio
+            - UpdateProduct
+            - UpdateProvisionedProduct
+            - UpdateProvisionedProductProperties
+            - UpdateProvisioningArtifact
+            - UpdateServiceAction
+            - UpdateTagOption
+      State: ENABLED
+      Targets:
+      - Arn: 
+          Ref: ServiceCatalogHubSNSTopic
+        Id: SCSNSTopicTrigger
+
+Outputs: 
+  SNSTopicARN:
+    Description: AWS Service Catalog SNS notification topic ARN from the Hub account
+    Value: !Ref ServiceCatalogHubSNSTopic
