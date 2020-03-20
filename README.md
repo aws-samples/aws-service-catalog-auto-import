@@ -32,9 +32,10 @@ Now, you may ask, how will the lambda know that there are changes in the hub por
 ## Setup
 ### Prerequisites
 #### AWS CloudFormation StackSets setup 
-To install this sample solution, you will need to ensure that you have the ability to use AWS CloudFormation StackSets to distribute the solution components to all your AWS accounts using automation. Please read [Prerequisites for Stack Set Operations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html) to understand further.
+To install this sample solution, you will need to ensure that you have the ability to use AWS CloudFormation StackSets to distribute the solution components to all your AWS accounts using automation. Please read [Prerequisites for Stack Set Operations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html) to understand further. 
 
 If you're not using [AWS Organizations automated deployments](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-enable-trusted-access.html), then you can grant Self-Managed Permissions to your AWS accounts in both hub and spoke accounts. This is done to ensure that your AWS hub account has permissions to execute AWS CloudFormation stacks in your spoke accounts.
+(**Skip these 2 steps if you're using AWS Organizations automated deployments**)
 1. _Create the StackSet administrator role in the hub account_  
   Run once in the hub account.  
   [![CreateStack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation#/stacks/new?stackName=IAM-StackSetAdministrator&templateURL=https://s3.amazonaws.com/cloudformation-stackset-sample-templates-us-east-1/AWSCloudFormationStackSetAdministrationRole.yml) 
