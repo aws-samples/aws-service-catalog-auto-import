@@ -130,3 +130,13 @@ If you're not using [AWS Organizations automated deployments](https://docs.aws.a
    * Click on the `Engineering Tools` portfolio, where you will see the `Amazon EC2` product copied
    * On the portfolio details page, choose the `Constraints` tab. You will see the `SCEC2LaunchRole` constraint applied to the `Amazon EC2` product
    * On the portfolio details page, choose the `Groups, roles, and users` tab. You will see the `ServiceCatalogEndusers` IAM role applied to this portfolio 
+
+[(Back to top)](#Automatically-import-and-sync-local-copies-of-AWS-Service-Catalog-portfolios-shared-from-a-hub-account)
+## Contributing
+Your contributions are always welcome! Please have a look at the [contribution guidelines](CONTRIBUTING.md) first. :tada:
+
+[(Back to top)](#Automatically-import-and-sync-local-copies-of-AWS-Service-Catalog-portfolios-shared-from-a-hub-account)
+## License
+This sample code is made available under a modified MIT license. See the [LICENSE](LICENSE) file.
+
+[(Back to top)](#Automatically-import-and-sync-local-copies-of-AWS-Service-Catalog-portfolios-shared-from-a-hub-account)
