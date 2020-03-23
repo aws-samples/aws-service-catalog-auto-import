@@ -7,7 +7,8 @@ However, in child accounts (linked accounts), there is still a requirement to cr
 To help you accelerate your implementation, I’d like to democratize a simple mechanism to auto import any shared portfolios from a hub account to the child account. This is based on proof of concepts that I have built for some of our customers recently. 
 
 ## Overview of sharing portfolios from the hub account
-This blog does not scope for setting up of your SC hub accounts. However, I would recommend that you automate setting up of your hub account SC portfolios using your preferred CICD tools. We have plenty of blogs that help you walk through this process, they are listed here: <ADD BLOGS>
+This solution does not scope for setting up of your AWS Service Catalog hub accounts. However, I would recommend that you automate setting up of your hub account SC portfolios using your preferred CICD tools. 
+
 You can share AWS SC portfolios in 2 ways, see (link)[https://docs.aws.amazon.com/servicecatalog/latest/dg/API_CreatePortfolioShare.html] for documentation:
 
 1. Directly to a specified AWS account
