@@ -54,11 +54,12 @@ If you're not using [AWS Organizations automated deployments](https://docs.aws.a
 1. Set up AWS CloudWatch event rules and Amazon SNS in your hub account using the following launch stack button
  [![CreateStack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation#/stacks/new?stackName=ServiceCatalogHubSetup&templateURL=https://marketplace-sa-resources.s3.amazonaws.com/Auto-import-sc/templates/sc-sns-hub.yml)
     * In the `Outputs` section, make sure you note the ARN of the SNS topic created, you will use it in step 3.
-2. Setup default IAM roles for AWS Service Catalog products in all AWS accounts. (**Run this sample from us-east-1 only**)
+    * **Please note**: This SNS topic has an overly permissive policy to account for the different ways you might share your AWS Service Catalog portfolio. Please lock down this policy based on your security requirements. Please read the official [docs](https://docs.aws.amazon.com/sns/latest/dg/sns-access-policy-use-cases.html) for further details on SNS access control
+2. Setup default IAM roles for AWS Service Catalog products in all AWS accounts (**Run this sample from us-east-1 only**)
    * You can use AWS CloudFormation StackSets to create a default IAM principal and a default AWS SC launch constraint in all your AWS accounts. 
    * Go to AWS CloudFormation StackSets from the hub account, and use the following sample template to set up sample roles in all your accounts: [IAM demo setup template](https://s3.amazonaws.com/aws-service-catalog-reference-architectures/iam/sc-demosetup-iam.json)
       * If you are not using AWS Organizations, then you can use [self-managed permissions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html) to set up StackSets in all AWS accounts that need to auto import AWS SC portfolios shared to them
-      * [Documentation](https://aws.amazon.com/blogs/aws/use-cloudformation-stacksets-to-provision-resources-across-multiple-aws-accounts-and-regions/) to learn how to use AWS CloudFormation StackSets.
+      * [Documentation](https://aws.amazon.com/blogs/aws/use-cloudformation-stacksets-to-provision-resources-across-multiple-aws-accounts-and-regions/) to learn how to use AWS CloudFormation StackSets
       * You will be prompted to enter the following parameters during the StackSets launch:
         * `StackSet name`: Enter an appropriate stackset name such as `aws-iam-roles-stackset`
       * These stacks will create the following IAM entities in every account, please note the names for step 3
@@ -66,7 +67,7 @@ If you're not using [AWS Organizations automated deployments](https://docs.aws.a
         * IAM Principal Role: `ServiceCatalogEndusers`
         * SC Launch Constraint (Service Role): `SCEC2LaunchRole`
     * On the `Configure StackSet options` page, select `Service Managed Permissions` if you're using AWS Organizations, and want AWS CloudFormation to automatically deploy this stack to your designated accounts. If you're not using AWS Organizations, and want to self-manage stack permissions across accounts, select `Self service permissions`
-    * On the `Set deployment options` page, select your deployment targets and regions. Click `Next`.
+    * On the `Set deployment options` page, select your deployment targets and regions. Click `Next`
     * On the `Review` page, review all the configuration options you've selected, click the `I acknowledge that AWS CloudFormation might create IAM resources with custom names` check box, and click `Submit`
 3. Set up the auto import lambda function in all AWS spoke accounts (**Run this sample from us-east-1 only**)
    _Note: You should customize this implementation to set up individual launch constraints per product, and IAM principals per portfolio. You can do this by creating a map that your lambda function can read, or creating launch constraints that have the same name as the AWS SC product that the lambda function can read. The lambda function code is available in the resources/ folder of this repository_
@@ -126,7 +127,7 @@ If you're not using [AWS Organizations automated deployments](https://docs.aws.a
    * On the portfolio details page, choose the `Constraints` tab. You will see the `SCEC2LaunchRole` constraint applied to the `Linux Desktop` product
    * On the portfolio details page, choose the `Groups, roles, and users` tab. You will see the `ServiceCatalogEndusers` IAM role applied to this portfolio 
 
-###Limitations
+### Notes
 This sample does not include actions for deletion of AWS Service Catalog portfolios/products, but you can refer to the share actions and implement according to your business needs. Please create an issue if you'd like us to provide a sample for deletion as well.
 
 [(Back to top)](#Automatically-import-and-sync-local-copies-of-AWS-Service-Catalog-portfolios-shared-from-a-hub-account)
