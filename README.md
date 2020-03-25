@@ -32,6 +32,9 @@ Now, you may ask, how will the lambda know that there are changes in the hub por
 
 ## Setup
 ### Prerequisites
+#### AWS Region
+While this solution will work for any supported region, for this sample, please operate in **us-east-1**.
+ 
 #### AWS CloudFormation StackSets setup 
 To install this sample solution, you will need to ensure that you have the ability to use AWS CloudFormation StackSets to distribute the solution components to all your AWS accounts using automation. Please read [Prerequisites for Stack Set Operations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs.html) to understand further. 
 
@@ -95,7 +98,7 @@ If you're not using [AWS Organizations automated deployments](https://docs.aws.a
         * `Owner` – IT (it@example.com)
     * Click `Create`
 2. Create an AWS Service Catalog product in the portfolio created in the previous step
-     * Choose the name `Amazon EC2` to open the portfolio details page, and then choose Upload new product.
+     * Choose the name `Engineering Tools` to open the portfolio details page, and then choose Upload new product.
      * On the Enter product details page, type the following and then choose Next:
            * `Product name` – Linux Desktop
            * `Description` – Cloud development environment configured for engineering staff. Runs AWS Linux.
@@ -110,28 +113,21 @@ If you're not using [AWS Organizations automated deployments](https://docs.aws.a
            * `Version title` – v1.0
            * `Description` – Base Version
       * Click `Review` and then choose `Create Product`
-3. Add a Launch Constraint to Assign an IAM Role to the newly created product
-      * Choose the `Engineering Tools` portfolio
-      * On the portfolio details page, choose the `Constraints` tab, and then choose `Create constraint`
-      * For Product, choose `Amazon EC2`, and for Constraint type, choose `Launch`. Choose `Continue`
-      * On the Launch constraint page, in the `IAM roles`, choose `SCEC2LaunchRole` from the Setup section, and then choose `Submit`
-4. Grant End Users Access to the `Engineering Tools` portfolio
-   * On the portfolio details page, choose the `Groups, roles, and users` tab
-   * Choose Add groups, roles, users
-   * On the Groups tab, select the checkbox for `ServiceCatalogEndusers` from the Setup step
-   * Choose Add Access
-5. Share the portfolio with child accounts, or AWS Organizations
+3. Share the portfolio with child accounts, or AWS Organizations
    * On the portfolio details page, choose the `Share`
    * Click the `Share with new Account` button. Here, you have the option to share directly with an AWS Account, or within an AWS Organizations structure. Read more about [portfolio sharing](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/catalogs_portfolios_sharing.html)
    * Enter the AWS Account numbers you want to share this product with, or the AWS Organization entity
-6. Check if child accounts have automatically imported the created portfolio and product
-   * Log in to any one of your AWS Service Catalog spoke/child accounts(ones you've shared the `Amazon EC2` portfolio in the previous step) with `AdministratorAccess` or `AWSServiceCatalogAdminFullAccess` permissions
+4. Check if child accounts have automatically imported the created portfolio and product
+   * Log in to any one of your AWS Service Catalog spoke/child accounts(ones you've shared the `Engineering Tools` portfolio in the previous step) with `AdministratorAccess` or `AWSServiceCatalogAdminFullAccess` permissions
    * Open the [AWS Service Catalog console](https://console.aws.amazon.com/servicecatalog/) in us-east-1
    * Click on the `Portfolios` link under the `Administration` section on the left navigation pane
    * You will see that the `Engineering Tools` portfolio exists here
-   * Click on the `Engineering Tools` portfolio, where you will see the `Amazon EC2` product copied
-   * On the portfolio details page, choose the `Constraints` tab. You will see the `SCEC2LaunchRole` constraint applied to the `Amazon EC2` product
+   * Click on the `Engineering Tools` portfolio, where you will see the `Linux Desktop` product copied
+   * On the portfolio details page, choose the `Constraints` tab. You will see the `SCEC2LaunchRole` constraint applied to the `Linux Desktop` product
    * On the portfolio details page, choose the `Groups, roles, and users` tab. You will see the `ServiceCatalogEndusers` IAM role applied to this portfolio 
+
+###Limitations
+This sample does not include actions for deletion of AWS Service Catalog portfolios/products, but you can refer to the share actions and implement according to your business needs. Please create an issue if you'd like us to provide a sample for deletion as well.
 
 [(Back to top)](#Automatically-import-and-sync-local-copies-of-AWS-Service-Catalog-portfolios-shared-from-a-hub-account)
 ## Contributing
