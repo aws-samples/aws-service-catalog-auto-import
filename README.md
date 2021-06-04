@@ -32,6 +32,8 @@ Now, you may ask, how will the lambda know that there are changes in the hub por
 
 ## Setup
 ### Prerequisites
+1. [Create KMS Key to encrypt the SNS Topic](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html)
+
 #### AWS Region
 While this solution will work for any supported region, for this sample, please operate in **us-east-1**.
  

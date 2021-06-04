@@ -22,12 +22,16 @@ Parameters:
     Description: "AWS Service Catalog SNS notifications topic name"
     Type: String
     Default: ServiceCatalogHubSNSTopic
+  KMSId:
+    Description: KMS Encryption Key Id
+    Type: String
 Resources: 
   ServiceCatalogHubSNSTopic:
     Type: AWS::SNS::Topic
     Properties: 
       DisplayName: Service Catalog Hub SNS Topic
       TopicName: !Ref ServiceCatalogHubSNSTopicName
+      KmsMasterKeyId: !Ref KMSId
   SNSAccessPolicy:
     Type: AWS::SNS::TopicPolicy
     Properties:
